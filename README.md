@@ -19,7 +19,9 @@ Besides, you need to remove 'id' field and its uniqueKey element.
     <!-- uniqueKey>id</uniqueKey -->  
 ```
 
-And, we need to remove or comment elevate.xml at solrconf.xml, which is to . Note: 
+And, we need to remove or comment elevate.xml at solrconf.xml, which is to use uuid instead of using "doc id" defined at elevate.xml
+Note: Not sure if this is really neccessary though.
+
 ```bash
 <!-- searchComponent name="elevator" class="solr.QueryElevationComponent" -->
     <!-- pick a fieldType to analyze queries -->
@@ -57,9 +59,22 @@ which are of text field types including dynamicField listed at schema.xml of the
 ```
 
 #### Indexing unstructured text file
-We could use 
+We could send the text file over the networ to the Solr server as a CSV data
 ```bash
+curl 'http://localhost:8983/solr/update?rowid=uid&header=false&fieldnames=name,dialogue_txt&commit=true' --data-binary @kinghenryiv -H Content-type:application/csv;charset=utf-8
+```
+We could also directly read the text file as a CSV data
+```bash
+curl http://localhost:8983/solr/update?rowid=uid&header=false&fieldnames=name,dialogue_txt&commit=true&stream.file=kinghenryiv&stream.contentType:application/csv;charset=utf-8
+```
+#### Query the result at the Solr server
+You may search for a word 'court' by a character 'FALSTAFF' of the paragraphs by typing in a query at a web browser, especially with a pair of (fieldName:value): (name: FALSTAFF)
+and (dialogue_txt:court) 
+```bash
+http://[your host ip address]:8983/solr/select?q=dialogue_txt:court AND name:FALSTAFF
 ```
 
 #### References
 ##### 1. Apache Solr 4 Cookbook, Rafal Kuc, Jan 2013, Packt Publishing Ltd
+##### 2. http://wiki.apache.org/solr/UpdateCSV
+##### 3. http://wiki.apache.org/solr/UniqueKey
