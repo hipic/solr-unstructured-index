@@ -49,7 +49,8 @@ PRINCE HENRY    For obtaining of suits?
 ```
 
 The file is composed of character name and dialogue. Thus, we could use two field names: character_name and dialogue, 
-which are of text field types including dynamicField listed at schema.xml of the Solr example.
+which are of text field types including dynamicField listed at schema.xml of the Solr example. However, it actually needs a
+parser to split a role name and dialogue, which is beyond here. Thus, we will not use character name field but only use dialogue.
 ```bash
 ...
 <field name="name" type="text_general" indexed="true" stored="true"/>
@@ -59,19 +60,19 @@ which are of text field types including dynamicField listed at schema.xml of the
 ```
 
 #### Indexing unstructured text file
-We could send the text file over the networ to the Solr server as a CSV data
+We could send the text file over the network to the Solr server as a CSV data
 ```bash
-curl 'http://localhost:8983/solr/update?rowid=uid&header=false&fieldnames=name,dialogue_txt&commit=true' --data-binary @kinghenryiv -H Content-type:application/csv;charset=utf-8
+curl 'http://localhost:8983/solr/update?rowid=uid&header=false&fieldnames=dialogue_txt&commit=true' --data-binary @kinghenryiv -H Content-type:application/csv;charset=utf-8
 ```
 We could also directly read the text file as a CSV data
 ```bash
-curl http://localhost:8983/solr/update?rowid=uid&header=false&fieldnames=name,dialogue_txt&commit=true&stream.file=kinghenryiv&stream.contentType:application/csv;charset=utf-8
+curl http://localhost:8983/solr/update?rowid=uid&header=false&fieldnames=dialogue_txt&commit=true&stream.file=kinghenryiv&stream.contentType:application/csv;charset=utf-8
 ```
 #### Query the result at the Solr server
 You may search for a word 'court' by a character 'FALSTAFF' of the paragraphs by typing in a query at a web browser, especially with a pair of (fieldName:value): (name: FALSTAFF)
 and (dialogue_txt:court) 
 ```bash
-http://[your host ip address]:8983/solr/select?q=dialogue_txt:court AND name:FALSTAFF
+http://[your host ip address]:8983/solr/select?q=dialogue_txt:court AND dialogue_txt:FALSTAFF
 ```
 
 #### References
